@@ -1,4 +1,4 @@
-package co.edu.usbcali.service;
+package co.edu.usbcali.demo.service;
 
 import java.util.List;
 import java.util.Optional;

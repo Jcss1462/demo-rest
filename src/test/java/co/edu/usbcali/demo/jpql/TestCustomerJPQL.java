@@ -37,6 +37,7 @@ public class TestCustomerJPQL {
 		assertNotNull(entityManager,"El entity manager es nulo");
 	}
 	
+	
 	@Test
 	void selecWhereParam() {
 		log.info("selecWhereParam");

@@ -1,13 +1,11 @@
 package co.edu.usbcali.demo.repository;
 
-import java.util.Collection;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import co.edu.usbcali.demo.domain.Customer;
 import co.edu.usbcali.demo.domain.Product;
 
 //le paso el nombre de la clase y el tipo de dato del id
