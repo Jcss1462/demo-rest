@@ -73,7 +73,7 @@ public class ProductServiceImpl implements PrdouctService {
 			throw new Exception("El producto con proId:" + entity.getProId() + " no existe\nNo se puede borrar");
 		}
 
-		// valido que no tenga registro en shoping cart
+		// valido que no tenga registro en shoping product
 		productRepository.findById(entity.getProId()).ifPresent(product -> {
 			if (product.getShoppingProducts() != null && product.getShoppingProducts().isEmpty() == false) {
 				throw new RuntimeException(

@@ -1,7 +1,9 @@
 package co.edu.usbcali.demo.service;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
@@ -100,6 +102,31 @@ class CustomerServiceTest {
 		
 		//borro
 		customerService.delete(customer);
+	}
+	
+	@Test
+	@Order(5)
+	void findAll() throws Exception {
+		//ver informacion en la consola
+		log.info("findAll");
+		List<Customer> customerList=customerService.findAll();
+		//siga si no esta vacio	
+		assertFalse(customerList.isEmpty(),"No existen customers en la lista");
+		
+		//forma funcional
+		customerList.forEach(customer->{
+			log.info("name: "+customer.getName());
+			log.info("Email: "+customer.getEmail());
+		});
+	}
+	
+	@Test
+	@Order(6)
+	void count() throws Exception {
+		//ver informacion en la consola
+		log.info("count");
+		log.info("El numero de customers es= "+customerService.count());
+		
 	}
 	
 

@@ -1,7 +1,9 @@
 package co.edu.usbcali.demo.service;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
@@ -34,7 +36,6 @@ class ProductServiceTest {
 	@Order(1)
 	void save() throws Exception {
 		log.info("save");
-	
 
 		// creo un nuevo customer
 		Product product = new Product();
@@ -48,55 +49,80 @@ class ProductServiceTest {
 		productService.save(product);
 
 	}
-	
+
 	@Test
 	@Order(2)
-	//consulto si el cliente fue grabado
+	// consulto si el cliente fue grabado
 	void findById() throws Exception {
-		//ver informacion en la consola
+		// ver informacion en la consola
 		log.info("findById");
-		Optional<Product> productOptional=productService.findById(proId);
-		//siga si es verdadero(existe)	
-		assertTrue(productOptional.isPresent(),"El producto no existe");
+		Optional<Product> productOptional = productService.findById(proId);
+		// siga si es verdadero(existe)
+		assertTrue(productOptional.isPresent(), "El producto no existe");
 	}
-	
+
 	@Test
 	@Order(3)
 	void update() throws Exception {
-		
-		//ver informacion en la consola
+
+		// ver informacion en la consola
 		log.info("update");
-		
-		Optional<Product> productOptional=productService.findById(proId);
-		
-		//siga si es verdadero(existe)	
-		assertTrue(productOptional.isPresent(),"El producto no existe");
-		
-		//obtengo el producto
-		Product product=productOptional.get();
-		
-		//modifico
+
+		Optional<Product> productOptional = productService.findById(proId);
+
+		// siga si es verdadero(existe)
+		assertTrue(productOptional.isPresent(), "El producto no existe");
+
+		// obtengo el producto
+		Product product = productOptional.get();
+
+		// modifico
 		product.setEnable("N");
-		
+
 		productService.update(product);
 	}
-	
+
 	@Test
 	@Order(4)
 	void delete() throws Exception {
-		
-		//ver informacion en la consola
+
+		// ver informacion en la consola
 		log.info("delete");
-		
-		Optional<Product> productOptional=productService.findById(proId);
-		//siga si es verdadero(existe)	
-		assertTrue(productOptional.isPresent(),"El producto no existe");
-		
-		//obtengo el producto
-		Product product=productOptional.get();
-		
-		//borro
+
+		Optional<Product> productOptional = productService.findById(proId);
+		// siga si es verdadero(existe)
+		assertTrue(productOptional.isPresent(), "El producto no existe");
+
+		// obtengo el producto
+		Product product = productOptional.get();
+
+		// borro
 		productService.delete(product);
+	}
+
+	@Test
+	@Order(5)
+	void findAll() throws Exception {
+		// ver informacion en la consola
+		log.info("findAll");
+		List<Product> productList = productService.findAll();
+		// siga si no esta vacio
+		assertFalse(productList.isEmpty(), "No existen productos en la lista");
+
+		// forma funcional
+		productList.forEach(product -> {
+			log.info("name: " + product.getName());
+			log.info("Price: " + product.getPrice());
+		});
+	}
+
+	@Test
+	@Order(6)
+	void count() throws Exception {
+		// ver informacion en la consola
+		log.info("count");
+		log.info("El numero de productos es= " + productService.count());
+
 	}
 
 }
