@@ -2,6 +2,11 @@ package co.edu.usbcali.demo.service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+
+import javax.validation.ConstraintViolation;
+import javax.validation.ConstraintViolationException;
+import javax.validation.Validator;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
@@ -19,6 +24,10 @@ public class CustomerServiceImpl implements CustomerService {
 	//inyecto el repositorio
 	@Autowired
 	CustomerRepository customerRepository;
+	
+	//inyecto el validador
+	@Autowired
+	Validator validator;
 
 	@Override
 	@Transactional(readOnly=true)
@@ -100,6 +109,8 @@ public class CustomerServiceImpl implements CustomerService {
 		if(customerRepository.existsById(id)) {
 			//manda el objeto
 			delete(customerRepository.findById(id).get());
+		}else {
+			throw new Exception("El customer con id:"+id+" no existe");
 		}
 		
 	}
@@ -116,34 +127,15 @@ public class CustomerServiceImpl implements CustomerService {
 		if(entity==null) {
 			throw new Exception("El customer es nulo");
 		}
-		//si es nulo o esta en blanco
-		if(entity.getAddress()==null||entity.getAddress().isBlank()==true) {
-			throw new Exception("El Address es obligatorio");
-		}
 		
-		//si es nulo o esta en blanco
-		if(entity.getEmail()==null||entity.getEmail().isBlank()==true) {
-			throw new Exception("El Email es obligatorio");
-		}
 		
-		//si es nulo o esta en blanco
-		if(entity.getEnable()==null||entity.getEnable().isBlank()==true) {
-			throw new Exception("El Enable es obligatorio");
-		}
-		
-		//si es nulo o esta en blanco
-		if(entity.getName()==null||entity.getName().isBlank()==true) {
-			throw new Exception("El Nombre es obligatorio");
-		}
-		
-		//si es nulo o esta en blanco
-		if(entity.getPhone()==null||entity.getPhone().isBlank()==true) {
-			throw new Exception("El Phone es obligatorio");
-		}
-		
-		//si es nulo o esta en blanco
-		if(entity.getToken()==null||entity.getToken().isBlank()==true) {
-			throw new Exception("El Token es obligatorio");
+		//validator
+		//retorna una lista de los constraint violados
+		Set<ConstraintViolation<Customer>> constrintViolation= validator.validate(entity);
+		//si no esta vacia lanza el error
+		if(constrintViolation.isEmpty()==false) {
+			
+			throw new ConstraintViolationException(constrintViolation);
 		}
 		
 	}
