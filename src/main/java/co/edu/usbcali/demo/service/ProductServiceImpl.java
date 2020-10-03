@@ -2,6 +2,11 @@ package co.edu.usbcali.demo.service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+
+import javax.validation.ConstraintViolation;
+import javax.validation.ConstraintViolationException;
+import javax.validation.Validator;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
@@ -19,6 +24,10 @@ public class ProductServiceImpl implements PrdouctService {
 	// inyecto el repositorio
 	@Autowired
 	ProductRepository productRepository;
+
+	// inyecto el validador
+	@Autowired
+	Validator validator;
 
 	@Override
 	@Transactional(readOnly = true)
@@ -97,6 +106,8 @@ public class ProductServiceImpl implements PrdouctService {
 		if (productRepository.existsById(id)) {
 			// manda el objeto
 			delete(productRepository.findById(id).get());
+		} else {
+			throw new Exception("El producto con proId:" + id + " no existe y no se puede borrar");
 		}
 
 	}
@@ -113,34 +124,14 @@ public class ProductServiceImpl implements PrdouctService {
 		if (entity == null) {
 			throw new Exception("El product es nulo");
 		}
-		// si es nulo o esta en blanco
-		if (entity.getDetail() == null || entity.getDetail().isBlank() == true) {
-			throw new Exception("El Detail es obligatorio");
-		}
 
-		// si es nulo o esta en blanco
-		if (entity.getEnable() == null || entity.getEnable().isBlank() == true) {
-			throw new Exception("El Enable es obligatorio");
-		}
+		// validator
+		// retorna una lista de los constraint violados
+		Set<ConstraintViolation<Product>> constrintViolation = validator.validate(entity);
+		// si no esta vacia lanza el error
+		if (constrintViolation.isEmpty() == false) {
 
-		// si es nulo o esta en blanco
-		if (entity.getImage() == null || entity.getImage().isBlank() == true) {
-			throw new Exception("El Image es obligatorio");
-		}
-
-		// si es nulo o esta en blanco
-		if (entity.getName() == null || entity.getName().isBlank() == true) {
-			throw new Exception("El Nombre es obligatorio");
-		}
-
-		// si es nulo o esta en blanco
-		if (entity.getPrice() == null || entity.getPrice() < 0) {
-			throw new Exception("El Precio es obligatorio y debe ser valido");
-		}
-
-		// si es nulo o esta en blanco
-		if (entity.getProId() == null || entity.getProId().isBlank() == true) {
-			throw new Exception("El proId es obligatorio");
+			throw new ConstraintViolationException(constrintViolation);
 		}
 
 	}

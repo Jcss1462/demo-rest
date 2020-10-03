@@ -109,7 +109,6 @@ public class CustomerController {
 	// ? = puede retornar cualqier cosa
 	public ResponseEntity<?> delete(@PathVariable("email") String email) throws Exception {
 
-		
 		//borro
 		customerService.deleteById(email);
 

@@ -2,6 +2,11 @@ package co.edu.usbcali.demo.service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+
+import javax.validation.ConstraintViolation;
+import javax.validation.ConstraintViolationException;
+import javax.validation.Validator;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
@@ -28,6 +33,10 @@ public class ShopingCartServiceImpl implements ShopingCartService {
 	CustomerRepository customerRepository;
 	@Autowired
 	PaymentMethodRepository paymentMthodRepository;
+
+	// inyecto el validador
+	@Autowired
+	Validator validator;
 
 	@Override
 	@Transactional(readOnly = true)
@@ -99,7 +108,7 @@ public class ShopingCartServiceImpl implements ShopingCartService {
 	@Override
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
 	public void deleteById(Integer id) throws Exception {
-		
+
 		// valido que vengan los datos
 		if (id == null) {
 			throw new Exception("El carId es obligatorio");
@@ -125,29 +134,10 @@ public class ShopingCartServiceImpl implements ShopingCartService {
 		if (entity == null) {
 			throw new Exception("El ShoppingCart es nulo");
 		}
-		// si es nulo
-		if (entity.getCustomer() == null) {
-			throw new Exception("El customer es obligatorio");
-		}
 
 		// verifico que el customer exista
 		if (customerRepository.findById(entity.getCustomer().getEmail()).isPresent() == false) {
 			throw new Exception("El customer no existe");
-		}
-
-		// si es nulo o esta en blanco
-		if (entity.getEnable() == null || entity.getEnable().isBlank() == true) {
-			throw new Exception("El enable es obligatorio");
-		}
-
-		// si es nulo
-		if (entity.getItems() == null) {
-			throw new Exception("El numero de items es obligatorio");
-		}
-
-		// si es nulo
-		if (entity.getPaymentMethod() == null) {
-			throw new Exception("El paymentMethod es obligatorio");
 		}
 
 		// verifico que el paymentMethod exista
@@ -155,9 +145,13 @@ public class ShopingCartServiceImpl implements ShopingCartService {
 			throw new Exception("El paymentMethod no existe");
 		}
 
-		// si es nulo o esta en blanco
-		if (entity.getTotal() == null) {
-			throw new Exception("El total es obligatorio");
+		// validator
+		// retorna una lista de los constraint violados
+		Set<ConstraintViolation<ShoppingCart>> constrintViolation = validator.validate(entity);
+		// si no esta vacia lanza el error
+		if (constrintViolation.isEmpty() == false) {
+
+			throw new ConstraintViolationException(constrintViolation);
 		}
 
 	}

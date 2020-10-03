@@ -3,13 +3,17 @@ package co.edu.usbcali.demo.rest;
 import java.util.List;
 import java.util.Optional;
 
+import javax.validation.Valid;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -17,7 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 import co.edu.usbcali.demo.domain.Product;
 import co.edu.usbcali.demo.dto.ProductDTO;
 import co.edu.usbcali.demo.mapper.ProductMapper;
-import co.edu.usbcali.demo.repository.ProductRepository;
+import co.edu.usbcali.demo.service.PrdouctService;
 
 @RestController
 @RequestMapping("/api/product")
@@ -27,51 +31,55 @@ public class ProductController {
 
 	// inyecto el repositorio
 	@Autowired
-	ProductRepository productRepository;
+	PrdouctService productService;
 
 	// inyecto el mapeador
 	@Autowired
 	ProductMapper productMapper;
-	
-	
-	
+
 	@PostMapping("/save")
-	//envio los datos por el body de la peticion http
-	public  ResponseEntity<?> save(@RequestBody ProductDTO productDTO){
-		try {
-			//mapeo lo que recibo a product
-			Product product= productMapper.toProduct(productDTO);
-			//guardo el product
-			product=productRepository.save(product);
-			//convierto lo guardo a dto para retornarlo
-			productDTO=productMapper.toProductDTO(product);
-			
-			return ResponseEntity.ok().body(productDTO);
-		} catch (Exception e) {
-			log.error(e.getMessage(),e);
-			return ResponseEntity.badRequest().body(e.getMessage());
-		}
+	// envio los datos por el body de la peticion http
+	public ResponseEntity<?> save(@Valid @RequestBody ProductDTO productDTO) throws Exception {
+		log.info("save");
+		// mapeo lo que recibo a product
+		Product product = productMapper.toProduct(productDTO);
+		// guardo el product
+		product = productService.save(product);
+		// convierto lo guardo a dto para retornarlo
+		productDTO = productMapper.toProductDTO(product);
+
+		return ResponseEntity.ok().body(productDTO);
+
 	}
-	
-	
+
+	@PutMapping("/update")
+	// envio los datos por el body de la peticion http
+	// @valid valida la entrada
+	public ResponseEntity<?> update(@Valid @RequestBody ProductDTO productDTO) throws Exception {
+
+		// mapeo lo que recibo a customer
+		Product product = productMapper.toProduct(productDTO);
+		// guardo el customer
+		product = productService.update(product);
+		// convierto lo guardo a dto para retornarlo
+		productDTO = productMapper.toProductDTO(product);
+
+		return ResponseEntity.ok().body(productDTO);
+
+	}
 
 	// Get http
 	@GetMapping("/findAll")
 	// guardo lo mandado por el url en el parametro email
 	// ? = puede retornar cualqier cosa
-	public ResponseEntity<?> findAll() {
-		try {
-			// lista de products
-			List<Product> products = productRepository.findAll();
-			// uso el mapper par convertir la lista de products a los dtos
-			List<ProductDTO> productDTOs = productMapper.toProductsDto(products);
+	public ResponseEntity<?> findAll() throws Exception {
 
-			return ResponseEntity.ok().body(productDTOs);
+		// lista de products
+		List<Product> products = productService.findAll();
+		// uso el mapper par convertir la lista de products a los dtos
+		List<ProductDTO> productDTOs = productMapper.toProductsDto(products);
 
-		} catch (Exception e) {
-			log.error(e.getMessage(), e);
-			return ResponseEntity.badRequest().body(e.getMessage());
-		}
+		return ResponseEntity.ok().body(productDTOs);
 
 	}
 
@@ -79,27 +87,35 @@ public class ProductController {
 	@GetMapping("/findById/{proId}")
 	// guardo lo mandado por el url en el parametro email
 	// ? = puede retornar cualqier cosa
-	public ResponseEntity<?> findById(@PathVariable("proId") String proId) {
+	public ResponseEntity<?> findById(@PathVariable("proId") String proId) throws Exception {
 
-		try {
-			// obtengo el product
-			Optional<Product> productOptional = productRepository.findById(proId);
-			// si no se encuentra
-			if (productOptional.isPresent() == false) {
-				return ResponseEntity.ok().body("Product not found");
-			}
-			// extraigo el producto
-			Product product = productOptional.get();
-
-			// creo el DTO y uso el mapper para convertir el product a dto
-			ProductDTO productDto = productMapper.toProductDTO(product);
-
-			return ResponseEntity.ok().body(productDto);
-
-		} catch (Exception e) {
-			log.error(e.getMessage(), e);
-			return ResponseEntity.badRequest().body(e.getMessage());
+		// obtengo el product
+		Optional<Product> productOptional = productService.findById(proId);
+		// si no se encuentra
+		if (productOptional.isPresent() == false) {
+			return ResponseEntity.ok().body("Product not found");
 		}
+		// extraigo el producto
+		Product product = productOptional.get();
+
+		// creo el DTO y uso el mapper para convertir el product a dto
+		ProductDTO productDto = productMapper.toProductDTO(product);
+
+		return ResponseEntity.ok().body(productDto);
+
+	}
+
+	// Get http
+	@DeleteMapping("/delete/{proId}")
+	// guardo lo mandado por el url en el parametro proId
+	// ? = puede retornar cualqier cosa
+	public ResponseEntity<?> delete(@PathVariable("proId") String proId) throws Exception {
+
+		// borro
+		productService.deleteById(proId);
+		log.info(proId);
+
+		return ResponseEntity.ok().build();
 
 	}
 

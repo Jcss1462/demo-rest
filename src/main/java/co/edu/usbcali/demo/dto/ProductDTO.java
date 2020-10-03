@@ -1,21 +1,37 @@
 package co.edu.usbcali.demo.dto;
 
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
+
 public class ProductDTO {
-	
-	//uso los datos simples de  Product
+
+	// uso los datos simples de Product
+	@NotNull
+	@Size(min = 3, max = 255) // valido la longitud de carecteres
+	@NotEmpty // valido que no este vacio
 	private String proId;
-	
+
+	@NotNull
+	@Size(max = 255) // valido la longitud de carecteres
+	@NotEmpty // valido que no este vacio
 	private String detail;
-	
+
+	@NotNull
+	@Size(min = 1, max = 1)
+	@NotEmpty // valido que no este vacio
 	private String enable;
-	
+
 	private String image;
-	
+
+	@NotNull
+	@Size(min = 4, max = 255)
+	@NotEmpty // valido que no este vacio
 	private String name;
-	
+
+	@NotNull
 	private Integer price;
-	
-	
+
 	public ProductDTO() {
 		super();
 	}
@@ -77,6 +93,5 @@ public class ProductDTO {
 	public void setPrice(Integer price) {
 		this.price = price;
 	}
-	
-	
+
 }

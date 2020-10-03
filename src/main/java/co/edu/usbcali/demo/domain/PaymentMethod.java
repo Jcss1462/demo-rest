@@ -11,7 +11,9 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
-
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 /**
  * @author Zathura Code Generator http://zathuracode.org/ www.zathuracode.org
@@ -21,11 +23,20 @@ import javax.persistence.Table;
 @Table(name = "payment_method", schema = "public")
 public class PaymentMethod implements java.io.Serializable {
 	private static final long serialVersionUID = 1L;
-	
+
+	// bean validation
 	private Integer payId;
-	
+
+	// bean validation
+	@NotNull
+	@Size(min = 1, max = 1) // valido la longitud de carecteres
+	@NotEmpty // valido que no este vacio
 	private String enable;
-	
+
+	// bean validation
+	@NotNull
+	@Size(min = 1, max = 255) // valido la longitud de carecteres
+	@NotEmpty // valido que no este vacio
 	private String name;
 	private List<ShoppingCart> shoppingCarts = new ArrayList<ShoppingCart>(0);
 
@@ -41,7 +52,7 @@ public class PaymentMethod implements java.io.Serializable {
 
 	@Id
 	@Column(name = "pay_id", unique = true, nullable = false)
-	//permite extraer el id del nuevo objeto guardado
+	// permite extraer el id del nuevo objeto guardado
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	public Integer getPayId() {
 		return this.payId;

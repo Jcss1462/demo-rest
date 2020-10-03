@@ -2,6 +2,11 @@ package co.edu.usbcali.demo.service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+
+import javax.validation.ConstraintViolation;
+import javax.validation.ConstraintViolationException;
+import javax.validation.Validator;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
@@ -19,6 +24,10 @@ public class PaymentMethodServiceImpl implements PaymentMethodService {
 	// inyecto el repositorio
 	@Autowired
 	PaymentMethodRepository paymentMethodRepository;
+
+	// inyecto el validador
+	@Autowired
+	Validator validator;
 
 	@Override
 	@Transactional(readOnly = true)
@@ -115,14 +124,14 @@ public class PaymentMethodServiceImpl implements PaymentMethodService {
 		if (entity == null) {
 			throw new Exception("El paymentMethod es nulo");
 		}
-		// si es nulo o esta en blanco
-		if (entity.getEnable() == null || entity.getEnable().isBlank() == true) {
-			throw new Exception("El Enable es obligatorio");
-		}
 
-		// si es nulo o esta en blanco
-		if (entity.getName() == null || entity.getName().isBlank() == true) {
-			throw new Exception("El nombre es obligatorio");
+		// validator
+		// retorna una lista de los constraint violados
+		Set<ConstraintViolation<PaymentMethod>> constrintViolation = validator.validate(entity);
+		// si no esta vacia lanza el error
+		if (constrintViolation.isEmpty() == false) {
+
+			throw new ConstraintViolationException(constrintViolation);
 		}
 
 	}

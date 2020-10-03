@@ -13,7 +13,9 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
-
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 /**
  * @author Zathura Code Generator http://zathuracode.org/ www.zathuracode.org
@@ -23,19 +25,31 @@ import javax.persistence.Table;
 @Table(name = "shopping_cart", schema = "public")
 public class ShoppingCart implements java.io.Serializable {
 	private static final long serialVersionUID = 1L;
-	
+
 	private Integer carId;
-	
+
+	// bean validation
+	@NotNull
 	private Customer customer;
-	
+
+	// bean validation
+	@NotNull
 	private PaymentMethod paymentMethod;
-	
+
+	// bean validation
+	@NotNull
 	private Integer items;
 
+	// bean validation
+	@NotNull
 	private Long total;
+	// bean validation
 	
+	@NotNull
+	@Size(min = 1, max = 1) // valido la longitud de carecteres
+	@NotEmpty // valido que no este vacio
 	private String enable;
-	
+
 	private List<ShoppingProduct> shoppingProducts = new ArrayList<ShoppingProduct>(0);
 
 	public ShoppingCart() {
@@ -110,7 +124,7 @@ public class ShoppingCart implements java.io.Serializable {
 	public void setShoppingProducts(List<ShoppingProduct> shoppingProducts) {
 		this.shoppingProducts = shoppingProducts;
 	}
-	
+
 	@Column(name = "enable", nullable = false)
 	public String getEnable() {
 		return enable;
@@ -119,6 +133,5 @@ public class ShoppingCart implements java.io.Serializable {
 	public void setEnable(String enable) {
 		this.enable = enable;
 	}
-	
-	
+
 }
