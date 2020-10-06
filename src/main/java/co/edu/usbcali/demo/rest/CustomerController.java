@@ -7,6 +7,7 @@ import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -23,6 +24,8 @@ import co.edu.usbcali.demo.service.CustomerService;
 
 @RestController
 @RequestMapping("/api/customer")
+//cualquiera puede llamar el servcio
+@CrossOrigin("*")
 public class CustomerController {
 
 	//private final static Logger log = LoggerFactory.getLogger(CustomerController.class);
