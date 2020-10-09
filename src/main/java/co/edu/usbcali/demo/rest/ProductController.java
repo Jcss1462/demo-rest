@@ -9,6 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -25,11 +26,13 @@ import co.edu.usbcali.demo.service.PrdouctService;
 
 @RestController
 @RequestMapping("/api/product")
+//cualquiera puede llamar el servcio
+@CrossOrigin("*")
 public class ProductController {
 
 	private final static Logger log = LoggerFactory.getLogger(ProductController.class);
 
-	// inyecto el repositorio
+	// inyecto el servicio
 	@Autowired
 	PrdouctService productService;
 
@@ -57,9 +60,9 @@ public class ProductController {
 	// @valid valida la entrada
 	public ResponseEntity<?> update(@Valid @RequestBody ProductDTO productDTO) throws Exception {
 
-		// mapeo lo que recibo a customer
+		// mapeo lo que recibo a product
 		Product product = productMapper.toProduct(productDTO);
-		// guardo el customer
+		// guardo el product
 		product = productService.update(product);
 		// convierto lo guardo a dto para retornarlo
 		productDTO = productMapper.toProductDTO(product);

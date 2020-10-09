@@ -108,6 +108,8 @@ public class PaymentMethodServiceImpl implements PaymentMethodService {
 		if (paymentMethodRepository.existsById(id)) {
 			// manda el objeto
 			delete(paymentMethodRepository.findById(id).get());
+		}else {
+			throw new Exception("El paymentMethod con payId:"+id+" no existe");
 		}
 
 	}
