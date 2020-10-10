@@ -118,7 +118,10 @@ public class ShopingCartServiceImpl implements ShopingCartService {
 		if (shopingCartRepository.existsById(id)) {
 			// manda el objeto
 			delete(shopingCartRepository.findById(id).get());
+		}else {
+			throw new Exception("El shopingCart con carId:"+id+" no existe");
 		}
+		
 
 	}
 

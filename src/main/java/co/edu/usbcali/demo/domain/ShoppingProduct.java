@@ -9,6 +9,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.validation.constraints.NotNull;
 
 /**
  * @author Zathura Code Generator http://zathuracode.org/ www.zathuracode.org
@@ -21,12 +22,19 @@ public class ShoppingProduct implements java.io.Serializable {
 	
 	private Integer shprId;
 
+	// bean validation
+	@NotNull
 	private Product product;
 	
+	// bean validation
+	@NotNull
 	private ShoppingCart shoppingCart;
 	
+	// bean validation
+	@NotNull
 	private Integer quantity;
 	
+	@NotNull
 	private Long total;
 
 	public ShoppingProduct() {
