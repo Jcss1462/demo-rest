@@ -14,6 +14,7 @@ public class CustomerDTO {
 	@NotNull
 	@Email // valido que sea un correo
 	@Size(min = 3, max = 255) // valido la longitud de carecteres
+	@NotEmpty
 	private String email;
 
 	@Column(name = "address", nullable = false)
