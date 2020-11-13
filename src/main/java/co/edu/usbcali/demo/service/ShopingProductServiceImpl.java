@@ -157,8 +157,13 @@ public class ShopingProductServiceImpl implements ShopingProductService {
 	@Override
 	@Transactional(readOnly = true)
 	public Long totalShopingProductByShopingCart(Integer carId) {
-		// TODO Auto-generated method stub
+		
 		return shoppingProductRepository.totalShoppingProductByShoppingCart(carId);
+	}
+
+	@Override
+	public Integer totalItemsShopingCart(Integer carId) {
+		return shoppingProductRepository.totalItemsShopingCart(carId);
 	}
 
 }

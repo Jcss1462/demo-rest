@@ -3,6 +3,8 @@ package co.edu.usbcali.demo.service;
 import java.util.List;
 import java.util.Optional;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
@@ -18,6 +20,8 @@ import co.edu.usbcali.demo.domain.ShoppingProduct;
 @Scope("singleton")
 public class CartServiceImpl implements CartService {
 
+	private final static Logger log = LoggerFactory.getLogger(CartServiceImpl.class);
+
 	// inyecto los servicios que necesitar
 	@Autowired
 	CustomerService customerService;
@@ -27,6 +31,9 @@ public class CartServiceImpl implements CartService {
 	PrdouctService productService;
 	@Autowired
 	ShopingProductService shopingProductService;
+
+	Integer shpId = null;
+	Product product = null;
 
 	@Override
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
@@ -64,9 +71,10 @@ public class CartServiceImpl implements CartService {
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
 	public ShoppingProduct addProduct(Integer carId, String proId, Integer quantity) throws Exception {
 		ShoppingCart shopingCart = null;
-		Product product = null;
 		Long totalShopingProduct = 0L;
-		Long totalShoingCart=0L;
+		Long totalShopingCart = 0L;
+		Integer totalShopinCartItems = 0;
+		product = null;
 
 		// valido
 		if (carId == null || carId <= 0) {
@@ -103,33 +111,58 @@ public class CartServiceImpl implements CartService {
 		if (product.getEnable().equals("N") == true) {
 			throw new Exception("El product esta inabilitado");
 		}
-		
+
 		////////////////////////////////////////////////////////////////////////////////////////////////////
-		//valido si el producto ya se encuentra en el shoping cart
-		//if(shopingCart.getShoppingProducts().g)
+		// valido si el producto ya se encuentra en el shoping cart
+		shpId = null;
+		shopingCart.getShoppingProducts().forEach(item -> {
+			if (product == item.getProduct()) {
+				shpId = item.getShprId();
+			}
+		});
 
 		ShoppingProduct shopingProduct = new ShoppingProduct();
 
-		// mando el id, pro igual se asignara en Bd el generado automaticamente
-		shopingProduct.setShprId(0);
-		shopingProduct.setProduct(product);
-		shopingProduct.setQuantity(quantity);
-		shopingProduct.setShoppingCart(shopingCart);
-		// calculo el total del shoping product segun la cantidad
-		totalShopingProduct = Long.valueOf(product.getPrice() * quantity);
-		shopingProduct.setTotal(totalShopingProduct);
-		
-		//guardo el shopingProduct
-		shopingProduct = shopingProductService.save(shopingProduct);
-		
+		// si el producto ya esta en el shopingcart
+		if (shpId != null) {
+
+			if (shopingProductService.findById(shpId).isPresent() == false) {
+				throw new Exception("El shoping product no existe");
+			}
+			// obtego el shoping product
+			shopingProduct = shopingProductService.findById(shpId).get();
+			// actualizo valores
+			shopingProduct.setQuantity(shopingProduct.getQuantity() + quantity);
+			shopingProduct.setTotal(Long.valueOf(shopingProduct.getQuantity() * product.getPrice()));
+
+			shopingProductService.update(shopingProduct);
+		} else {
+			// mando el id, pro igual se asignara en Bd el generado automaticamente
+			shopingProduct.setShprId(0);
+			shopingProduct.setProduct(product);
+			shopingProduct.setQuantity(quantity);
+			shopingProduct.setShoppingCart(shopingCart);
+			// calculo el total del shoping product segun la cantidad
+			totalShopingProduct = Long.valueOf(product.getPrice() * quantity);
+			shopingProduct.setTotal(totalShopingProduct);
+
+			// guardo el shopingProduct
+			shopingProduct = shopingProductService.save(shopingProduct);
+
+		}
+
 		///////////////////////////////////////////////////////////////////////////////////////////////////
-		
-		//calculo el nuevo total de shopingCart
-		totalShoingCart=shopingProductService.totalShopingProductByShopingCart(carId);
-		//actualizo el valor
-		shopingCart.setTotal(totalShoingCart);
+		// calculo el nuevo total de shopingCart
+		totalShopingCart = shopingProductService.totalShopingProductByShopingCart(carId);
+		// actualizo el valor
+		shopingCart.setTotal(totalShopingCart);
+
+		// calculo el total de items del shoping cart
+		totalShopinCartItems = shopingProductService.totalItemsShopingCart(carId);
+		// actualizo el valor
+		shopingCart.setItems(totalShopinCartItems);
+
 		shopingCartService.update(shopingCart);
-		
 
 		return shopingProduct;
 	}
@@ -137,22 +170,135 @@ public class CartServiceImpl implements CartService {
 	@Override
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
 	public void removeProduct(Integer carId, String proId) throws Exception {
-		// TODO Auto-generated method stub
+
+		//Long totalShopingCart = 0L;
+		//Integer totalShopinCartItems = 0;
+
+		// valido
+		if (carId == null || carId <= 0) {
+			throw new Exception("El carId es nulo o menor a 0");
+		}
+		if (proId == null || proId.isBlank() == true) {
+			throw new Exception("El proId es nulo o menor a 0");
+		}
+
+		// valido que el shopingCart exista
+		if (shopingCartService.findById(carId).isPresent() == false) {
+			throw new Exception("El shopingCart no existe");
+		}
+
+		// obtengo el shoping cart
+		ShoppingCart shopingCart = shopingCartService.findById(carId).get();
+
+		// valido que el producto exista
+		if (productService.findById(proId).isPresent() == false) {
+			throw new Exception("El product no existe");
+		}
+
+		// obtengo el producto
+		Product product = productService.findById(proId).get();
+
+		/////////////////////////////////////////////////////////////////////////////////
+		// valido que tenga el producto
+		shpId = null;
+		shopingCart.getShoppingProducts().forEach(item -> {
+			if (product == item.getProduct()) {
+				shpId = item.getShprId();
+			}
+		});
+
+		if (shpId == null) {
+			throw new Exception("El shoping cart no contiene el producto con id: " + proId);
+		}
+
+		// guardo el product
+		shopingProductService.deleteById(shpId);
+
+		//////////////////////////////////////////////////////////////////////////////////////////////////
+		/**
+		// calculo el nuevo total de shopingCart
+		totalShopingCart = shopingProductService.totalShopingProductByShopingCart(carId) == null ? 0: shopingProductService.totalShopingProductByShopingCart(carId);
+		// actualizo el valor
+		shopingCart.setTotal(totalShopingCart);
+		
+		// calculo el total de items del shoping cart
+		totalShopinCartItems = shopingProductService.totalItemsShopingCart(carId) == null ? 0: shopingProductService.totalItemsShopingCart(carId);
+		// actualizo el valor
+		shopingCart.setItems(totalShopinCartItems);
+
+		shopingCartService.update(shopingCart);
+		*/
 
 	}
 
 	@Override
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
 	public void clearCart(Integer carId) throws Exception {
-		// TODO Auto-generated method stub
+		// valido
+		if (carId == null || carId <= 0) {
+			throw new Exception("El carId es nulo o menor a 0");
+		}
+
+		// valido que el shopingCart exista
+		if (shopingCartService.findById(carId).isPresent() == false) {
+			throw new Exception("El shopingCart no existe");
+		}
+
+		// obtengo el shoping cart
+		ShoppingCart shopingCart = shopingCartService.findById(carId).get();
+
+		// si el shoping cart tiene pymentmethod no dejo eliminarlo
+		if (shopingCart.getPaymentMethod() != null) {
+			throw new Exception("Este carro ya esta pagado, no se puede limpiar");
+		}
+
+		// creo una copia de los shopinProducts
+		List<ShoppingProduct> listProducts = shopingCart.getShoppingProducts();
+
+		listProducts.forEach(item -> {
+			try {
+				if (shopingProductService.findById(item.getShprId()).get() == item) {
+
+					// obtengo el shoping product
+					ShoppingProduct shoppingProduct = shopingProductService.findById(item.getShprId()).get();
+					log.info(shoppingProduct.getShprId().toString());
+					// borro el shoping product
+					shopingProductService.delete(shoppingProduct);
+
+				}
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		});
+
+		////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+		// modififico la cantidad de items y el total a 0
+		shopingCart.setItems(0);
+		shopingCart.setTotal(0L);
+		// shopingCartService.update(shopingCart);
 
 	}
 
 	@Override
 	@Transactional(readOnly = true)
 	public List<ShoppingProduct> findShoppingProductByShoppingCart(Integer carId) throws Exception {
-		// TODO Auto-generated method stub
-		return null;
+		// valido
+		if (carId == null || carId <= 0) {
+			throw new Exception("El carId es nulo o menor a 0");
+		}
+
+		// valido que el shopingCart exista
+		if (shopingCartService.findById(carId).isPresent() == false) {
+			throw new Exception("El shopingCart no existe");
+		}
+
+		// obtengo el shoping cart
+		ShoppingCart shopingCart = shopingCartService.findById(carId).get();
+		List<ShoppingProduct> listaShopingProducts = shopingCart.getShoppingProducts();
+
+		return listaShopingProducts;
+
 	}
 
 }
