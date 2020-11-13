@@ -10,6 +10,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.PositiveOrZero;
 
 /**
  * @author Zathura Code Generator http://zathuracode.org/ www.zathuracode.org
@@ -32,9 +33,11 @@ public class ShoppingProduct implements java.io.Serializable {
 	
 	// bean validation
 	@NotNull
+	@PositiveOrZero
 	private Integer quantity;
 	
 	@NotNull
+	@PositiveOrZero
 	private Long total;
 
 	public ShoppingProduct() {

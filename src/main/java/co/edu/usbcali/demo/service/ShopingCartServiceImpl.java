@@ -143,10 +143,10 @@ public class ShopingCartServiceImpl implements ShopingCartService {
 			throw new Exception("El customer no existe");
 		}
 
-		// verifico que el paymentMethod exista
+		/** verifico que el paymentMethod exista
 		if (paymentMthodRepository.findById(entity.getPaymentMethod().getPayId()).isPresent() == false) {
 			throw new Exception("El paymentMethod no existe");
-		}
+		}**/
 
 		// validator
 		// retorna una lista de los constraint violados
@@ -164,5 +164,7 @@ public class ShopingCartServiceImpl implements ShopingCartService {
 	public Long count() {
 		return shopingCartRepository.count();
 	}
+
+	
 
 }

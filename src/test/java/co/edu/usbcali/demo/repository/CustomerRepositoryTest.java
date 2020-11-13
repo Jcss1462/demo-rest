@@ -143,7 +143,7 @@ class CustomerRepositoryTest {
 	@Transactional
 	@Order(7)
 	void findByEnableAndEmail() {
-		List<Customer> customers=cutomerRepository.findByEnableAndEmail("Y", "fgiraudot0@economist.com");
+		List<Customer> customers=cutomerRepository.findByEnableAndEmail("N", "ehutcheonh@multiply.com");
 		//siga si encontro registro(no esta vacio)
 		assertFalse(customers.isEmpty(),"Registro no enconrado");
 		

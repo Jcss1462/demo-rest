@@ -154,4 +154,11 @@ public class ShopingProductServiceImpl implements ShopingProductService {
 		return shoppingProductRepository.count();
 	}
 
+	@Override
+	@Transactional(readOnly = true)
+	public Long totalShopingProductByShopingCart(Integer carId) {
+		// TODO Auto-generated method stub
+		return shoppingProductRepository.totalShoppingProductByShoppingCart(carId);
+	}
+
 }

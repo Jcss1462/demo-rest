@@ -15,6 +15,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.PositiveOrZero;
 import javax.validation.constraints.Size;
 
 /**
@@ -32,16 +33,17 @@ public class ShoppingCart implements java.io.Serializable {
 	@NotNull
 	private Customer customer;
 
-	// bean validation
-	@NotNull
+
 	private PaymentMethod paymentMethod;
 
 	// bean validation
 	@NotNull
+	@PositiveOrZero
 	private Integer items;
 
 	// bean validation
 	@NotNull
+	@PositiveOrZero
 	private Long total;
 	// bean validation
 	

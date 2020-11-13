@@ -4,4 +4,5 @@ import co.edu.usbcali.demo.domain.ShoppingCart;
 
 public interface ShopingCartService extends GenericService<ShoppingCart, Integer> {
 
+	
 }
