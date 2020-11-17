@@ -62,7 +62,7 @@ public class ShoppingProduct implements java.io.Serializable {
 		this.shprId = shprId;
 	}
 
-	@ManyToOne(fetch = FetchType.LAZY)
+	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "pro_id")
 	public Product getProduct() {
 		return this.product;
@@ -72,7 +72,7 @@ public class ShoppingProduct implements java.io.Serializable {
 		this.product = product;
 	}
 
-	@ManyToOne(fetch = FetchType.LAZY)
+	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "car_id")
 	public ShoppingCart getShoppingCart() {
 		return this.shoppingCart;

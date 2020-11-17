@@ -32,9 +32,6 @@ public class CartServiceImpl implements CartService {
 	@Autowired
 	ShopingProductService shopingProductService;
 
-	Integer shpId = null;
-	Product product = null;
-
 	@Override
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
 	public ShoppingCart createCart(String email) throws Exception {
@@ -74,7 +71,7 @@ public class CartServiceImpl implements CartService {
 		Long totalShopingProduct = 0L;
 		Long totalShopingCart = 0L;
 		Integer totalShopinCartItems = 0;
-		product = null;
+		Product product = null;
 
 		// valido
 		if (carId == null || carId <= 0) {
@@ -114,29 +111,18 @@ public class CartServiceImpl implements CartService {
 
 		////////////////////////////////////////////////////////////////////////////////////////////////////
 		// valido si el producto ya se encuentra en el shoping cart
-		shpId = null;
-		shopingCart.getShoppingProducts().forEach(item -> {
-			if (product == item.getProduct()) {
-				shpId = item.getShprId();
-			}
-		});
-
-		ShoppingProduct shopingProduct = new ShoppingProduct();
+		ShoppingProduct shopingProduct = shopingProductService.obtenerShopingProductFromShopingCart(carId, proId);
 
 		// si el producto ya esta en el shopingcart
-		if (shpId != null) {
+		if (shopingProduct != null) {
 
-			if (shopingProductService.findById(shpId).isPresent() == false) {
-				throw new Exception("El shoping product no existe");
-			}
-			// obtego el shoping product
-			shopingProduct = shopingProductService.findById(shpId).get();
 			// actualizo valores
 			shopingProduct.setQuantity(shopingProduct.getQuantity() + quantity);
 			shopingProduct.setTotal(Long.valueOf(shopingProduct.getQuantity() * product.getPrice()));
 
 			shopingProductService.update(shopingProduct);
 		} else {
+			shopingProduct = new ShoppingProduct();
 			// mando el id, pro igual se asignara en Bd el generado automaticamente
 			shopingProduct.setShprId(0);
 			shopingProduct.setProduct(product);
@@ -171,8 +157,8 @@ public class CartServiceImpl implements CartService {
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
 	public void removeProduct(Integer carId, String proId) throws Exception {
 
-		//Long totalShopingCart = 0L;
-		//Integer totalShopinCartItems = 0;
+		Long totalShopingCart = 0L;
+		Integer totalShopinCartItems = 0;
 
 		// valido
 		if (carId == null || carId <= 0) {
@@ -195,39 +181,33 @@ public class CartServiceImpl implements CartService {
 			throw new Exception("El product no existe");
 		}
 
-		// obtengo el producto
-		Product product = productService.findById(proId).get();
-
 		/////////////////////////////////////////////////////////////////////////////////
 		// valido que tenga el producto
-		shpId = null;
-		shopingCart.getShoppingProducts().forEach(item -> {
-			if (product == item.getProduct()) {
-				shpId = item.getShprId();
-			}
-		});
+		ShoppingProduct shopingProduct = shopingProductService.obtenerShopingProductFromShopingCart(carId, proId);
 
-		if (shpId == null) {
+		if (shopingProduct == null) {
 			throw new Exception("El shoping cart no contiene el producto con id: " + proId);
 		}
 
-		// guardo el product
-		shopingProductService.deleteById(shpId);
+		// borro el product
+		shopingProductService.deleteById(shopingProduct.getShprId());
 
 		//////////////////////////////////////////////////////////////////////////////////////////////////
-		/**
+		// obtengo el shoping cart
+		shopingCart = shopingCartService.findById(carId).get();
 		// calculo el nuevo total de shopingCart
-		totalShopingCart = shopingProductService.totalShopingProductByShopingCart(carId) == null ? 0: shopingProductService.totalShopingProductByShopingCart(carId);
+		totalShopingCart = shopingProductService.totalShopingProductByShopingCart(carId) == null ? 0
+				: shopingProductService.totalShopingProductByShopingCart(carId);
 		// actualizo el valor
 		shopingCart.setTotal(totalShopingCart);
-		
+
 		// calculo el total de items del shoping cart
-		totalShopinCartItems = shopingProductService.totalItemsShopingCart(carId) == null ? 0: shopingProductService.totalItemsShopingCart(carId);
+		totalShopinCartItems = shopingProductService.totalItemsShopingCart(carId) == null ? 0
+				: shopingProductService.totalItemsShopingCart(carId);
 		// actualizo el valor
 		shopingCart.setItems(totalShopinCartItems);
 
 		shopingCartService.update(shopingCart);
-		*/
 
 	}
 
@@ -252,32 +232,25 @@ public class CartServiceImpl implements CartService {
 			throw new Exception("Este carro ya esta pagado, no se puede limpiar");
 		}
 
-		// creo una copia de los shopinProducts
-		List<ShoppingProduct> listProducts = shopingCart.getShoppingProducts();
-
-		listProducts.forEach(item -> {
-			try {
-				if (shopingProductService.findById(item.getShprId()).get() == item) {
-
-					// obtengo el shoping product
-					ShoppingProduct shoppingProduct = shopingProductService.findById(item.getShprId()).get();
-					log.info(shoppingProduct.getShprId().toString());
-					// borro el shoping product
-					shopingProductService.delete(shoppingProduct);
-
-				}
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		});
+		
+		// reviso si el shoping cart tiene elementos
+		List<ShoppingProduct> shopingProducts = shopingProductService.findByCartId(carId);
+		
+		//si el carro no contiene shoping products
+		if (shopingProducts.isEmpty()) {
+			throw new Exception("El shoping cart ya esta vacio");
+		}
+		
+		//si tiene elementos recorro la lista de shopng products para eliminarlos
+		for (ShoppingProduct item : shopingProducts) {
+			shopingProductService.deleteById(item.getShprId());
+		}
 
 		////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		// modififico la cantidad de items y el total a 0
 		shopingCart.setItems(0);
 		shopingCart.setTotal(0L);
-		// shopingCartService.update(shopingCart);
-
+		shopingCartService.update(shopingCart);
 	}
 
 	@Override
@@ -296,6 +269,10 @@ public class CartServiceImpl implements CartService {
 		// obtengo el shoping cart
 		ShoppingCart shopingCart = shopingCartService.findById(carId).get();
 		List<ShoppingProduct> listaShopingProducts = shopingCart.getShoppingProducts();
+
+		for (ShoppingProduct shoppingProduct : listaShopingProducts) {
+
+		}
 
 		return listaShopingProducts;
 

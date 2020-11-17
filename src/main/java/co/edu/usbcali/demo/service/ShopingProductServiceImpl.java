@@ -166,4 +166,16 @@ public class ShopingProductServiceImpl implements ShopingProductService {
 		return shoppingProductRepository.totalItemsShopingCart(carId);
 	}
 
+	@Override
+	public ShoppingProduct obtenerShopingProductFromShopingCart(Integer carId, String proId) {
+		// TODO Auto-generated method stub
+		return shoppingProductRepository.obtenerShopingProductFromShopingCart(carId, proId);
+	}
+
+	@Override
+	public List<ShoppingProduct> findByCartId(Integer carId) {
+		// TODO Auto-generated method stub
+		return shoppingProductRepository.findByCartId(carId);
+	}
+
 }

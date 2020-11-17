@@ -79,7 +79,7 @@ class CartServiceTest {
 		// Integer carId=15;
 		Integer carId = 57;
 		String proId = "APPL45";
-		Integer quantity = 10;
+		Integer quantity = 15;
 
 		// creo el shopingProduct
 		ShoppingProduct shopingproduct;
@@ -93,7 +93,6 @@ class CartServiceTest {
 	}
 
 	@Test
-	@Transactional
 	void eliminarShopingProduct() throws Exception {
 		// Arrange
 		// Integer carId=15;
@@ -118,7 +117,6 @@ class CartServiceTest {
 	}
 
 	@Test
-	@Transactional
 	void showShoppingProductByShoppingCart() throws Exception {
 		// Arrange
 		// Integer carId=15;
@@ -129,10 +127,10 @@ class CartServiceTest {
 
 		// Assert
 		// sigo si todo sale bien
-		//assertNotNull(listShopingProducts, "La lista esta vacia");
+		assertNotNull(listShopingProducts, "La lista esta vacia");
 		
 		listShopingProducts.forEach(item -> {
-			log.info(item.getProduct().getName()+"    "+item.getQuantity());
+			log.info(item.getProduct().toString()+item.getTotal().toString());
 		});
 		
 	}
