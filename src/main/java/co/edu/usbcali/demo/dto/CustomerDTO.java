@@ -51,12 +51,15 @@ public class CustomerDTO {
 	@Size(max = 255) // valido la longitud de carecteres
 	@NotEmpty // valido que no este vacio
 	private String token;
+	
+	@Column(name = "typeid", nullable = false)
+	private Integer customerType;
 
 	public CustomerDTO() {
 		super();
 	}
 
-	public CustomerDTO(String email, String address, String enable, String name, String phone, String token) {
+	public CustomerDTO(String email, String address, String enable, String name, String phone, String token, Integer customerType) {
 		super();
 		this.email = email;
 		this.address = address;
@@ -64,6 +67,7 @@ public class CustomerDTO {
 		this.name = name;
 		this.phone = phone;
 		this.token = token;
+		this.customerType=customerType;
 	}
 
 	public String getEmail() {
@@ -114,4 +118,13 @@ public class CustomerDTO {
 		this.token = token;
 	}
 
+	public Integer getCustomerType() {
+		return customerType;
+	}
+
+	public void setCustomerType(Integer customerType) {
+		this.customerType = customerType;
+	}
+	
+	
 }
