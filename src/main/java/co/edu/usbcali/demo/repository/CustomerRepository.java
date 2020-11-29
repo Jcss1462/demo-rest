@@ -1,6 +1,7 @@
 package co.edu.usbcali.demo.repository;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -17,5 +18,9 @@ public interface CustomerRepository extends JpaRepository<Customer, String> {
 	//modo manual
 	@Query("SELECT cus FROM Customer cus WHERE cus.name LIKE 'Mar%'")
 	public List<Customer> findCustomerLikemar();
+	
+	//modo automatico (por nombre del metodo)
+	public Optional<Customer> findByEmailAndToken(String email,String token);
+		
 
 }

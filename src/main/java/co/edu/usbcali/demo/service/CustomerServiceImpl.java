@@ -146,4 +146,11 @@ public class CustomerServiceImpl implements CustomerService {
 		return customerRepository.count();
 	}
 
+	@Override
+	@Transactional(readOnly=true)
+	public Optional<Customer> findByEmailAndToken(String email, String token) {
+		// TODO Auto-generated method stub
+		return customerRepository.findByEmailAndToken(email, token);
+	}
+
 }

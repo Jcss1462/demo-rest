@@ -129,5 +129,17 @@ class CustomerServiceTest {
 		
 	}
 	
+	@Test
+	@Order(7)
+	//le digo que muestre las excepciones que trae el servicio
+	void findByEmailAndToken() throws Exception{
+		log.info("findByEmailAndToken");
+		
+		Optional<Customer> customerOptional=customerService.findByEmailAndToken("jcss1462@gmail.com", "0l7AsDerYYMtk03wvkHbmGeV8IB2");
+		//siga si es verdadero(existe)	
+		assertTrue(customerOptional.isPresent(),"El customer no existe");
+		
+	}
+	
 
 }
