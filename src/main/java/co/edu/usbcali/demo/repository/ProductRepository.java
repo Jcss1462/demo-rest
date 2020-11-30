@@ -27,6 +27,8 @@ public interface ProductRepository extends JpaRepository<Product, String> {
 	
 	
 	public List<Product> findByPriceNotIn(@Param ("price") List<Integer> prices);
-
+	
+	@Query("SELECT pro FROM Product pro WHERE pro.enable= 'Y' ")
+	public List<Product> finByEnbleY();
 
 }

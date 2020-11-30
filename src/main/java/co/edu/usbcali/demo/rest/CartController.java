@@ -21,9 +21,9 @@ import co.edu.usbcali.demo.service.CartService;
 @RequestMapping("/api/cart")
 //cualquiera puede llamar el servcio
 @CrossOrigin("*")
-public class cartController {
+public class CartController {
 	
-	private final static Logger log = LoggerFactory.getLogger(cartController.class);
+	private final static Logger log = LoggerFactory.getLogger(CartController.class);
 
 	@Autowired
 	CartService cartService;

@@ -142,4 +142,11 @@ public class ProductServiceImpl implements PrdouctService {
 		return productRepository.count();
 	}
 
+	@Override
+	@Transactional(readOnly = true)
+	public List<Product> finByEnbleY() {
+		// TODO Auto-generated method stub
+		return productRepository.finByEnbleY();
+	}
+
 }

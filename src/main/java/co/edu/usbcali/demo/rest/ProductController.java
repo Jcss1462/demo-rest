@@ -122,4 +122,19 @@ public class ProductController {
 
 	}
 
+	// Get http
+	@GetMapping("/findAllEnable")
+	// guardo lo mandado por el url en el parametro email
+	// ? = puede retornar cualqier cosa
+	public ResponseEntity<?> findAllEnable() throws Exception {
+
+		// lista de products
+		List<Product> products = productService.finByEnbleY();
+		// uso el mapper par convertir la lista de products a los dtos
+		List<ProductDTO> productDTOs = productMapper.toProductsDto(products);
+
+		return ResponseEntity.ok().body(productDTOs);
+
+	}
+
 }
