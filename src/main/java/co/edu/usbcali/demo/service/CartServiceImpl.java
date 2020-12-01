@@ -55,6 +55,11 @@ public class CartServiceImpl implements CartService {
 		if (customer.getEnable() == null || customer.getEnable().equals("N") == true) {
 			throw new Exception("El cliente con email: " + email + " no esta habilitado");
 		}
+		
+		//verifico si existe un shoping cart activo
+		if(shopingCartService.ListShopingCartEnable(email).size()>0) {
+			throw new Exception("El cliente con email: " + email + " ya tiene un shopingCart activo");
+		}
 
 		// creo un nuevo shopingCart para el cliente y lo guardo
 		ShoppingCart shoppingCart = new ShoppingCart(0, customer, null, 0, 0L, "Y", null);

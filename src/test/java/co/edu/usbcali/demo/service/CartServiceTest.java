@@ -31,7 +31,7 @@ class CartServiceTest {
 	@Test
 	void debeCrearUnShopingCart() throws Exception {
 		// Arrange (declarar)
-		String email = "abaglowbn@furl.net";
+		String email = "jcss1462@gmail.com";
 		ShoppingCart shopingCart = null;
 		// Act (actuar)
 		shopingCart = cartService.createCart(email);

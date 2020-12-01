@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import co.edu.usbcali.demo.domain.ShoppingCart;
 import co.edu.usbcali.demo.domain.ShoppingProduct;
 import co.edu.usbcali.demo.dto.SopingProductDTO;
 import co.edu.usbcali.demo.mapper.ShopingProductMapper;
@@ -22,12 +23,12 @@ import co.edu.usbcali.demo.service.CartService;
 //cualquiera puede llamar el servcio
 @CrossOrigin("*")
 public class CartController {
-	
+
 	private final static Logger log = LoggerFactory.getLogger(CartController.class);
 
 	@Autowired
 	CartService cartService;
-	
+
 	@Autowired
 	ShopingProductMapper shopingProductMapper;
 
@@ -36,15 +37,15 @@ public class CartController {
 	public ResponseEntity<?> findById(@PathVariable("carId") String carId) throws Exception {
 		// lista de customers
 		List<ShoppingProduct> products = cartService.findShoppingProductByShoppingCart(Integer.parseInt(carId));
-		
-		List<SopingProductDTO> productDto=shopingProductMapper.toShopingProductsDto(products);
-		
-		//log.info(productDto.get(0).getProduct().getName());
-		
+
+		List<SopingProductDTO> productDto = shopingProductMapper.toShopingProductsDto(products);
+
+		// log.info(productDto.get(0).getProduct().getName());
+
 		return ResponseEntity.ok().body(productDto);
 
 	}
-	
+
 	
 
 }

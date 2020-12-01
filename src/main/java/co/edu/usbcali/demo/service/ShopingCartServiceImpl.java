@@ -118,10 +118,9 @@ public class ShopingCartServiceImpl implements ShopingCartService {
 		if (shopingCartRepository.existsById(id)) {
 			// manda el objeto
 			delete(shopingCartRepository.findById(id).get());
-		}else {
-			throw new Exception("El shopingCart con carId:"+id+" no existe");
+		} else {
+			throw new Exception("El shopingCart con carId:" + id + " no existe");
 		}
-		
 
 	}
 
@@ -143,10 +142,11 @@ public class ShopingCartServiceImpl implements ShopingCartService {
 			throw new Exception("El customer no existe");
 		}
 
-		/** verifico que el paymentMethod exista
-		if (paymentMthodRepository.findById(entity.getPaymentMethod().getPayId()).isPresent() == false) {
-			throw new Exception("El paymentMethod no existe");
-		}**/
+		/**
+		 * verifico que el paymentMethod exista if
+		 * (paymentMthodRepository.findById(entity.getPaymentMethod().getPayId()).isPresent()
+		 * == false) { throw new Exception("El paymentMethod no existe"); }
+		 **/
 
 		// validator
 		// retorna una lista de los constraint violados
@@ -165,6 +165,27 @@ public class ShopingCartServiceImpl implements ShopingCartService {
 		return shopingCartRepository.count();
 	}
 
-	
+	@Override
+	public List<ShoppingCart> ListShopingCartEnable(String email) throws Exception {
+
+		// verifico que el customer exista
+		if (customerRepository.findById(email).isPresent() == false) {
+			throw new Exception("El customer no existe");
+		}
+
+		return shopingCartRepository.findShopingCartEnable(email);
+	}
+
+	@Override
+	public List<ShoppingCart> ListShopingCartDisable(String email) throws Exception {
+
+		// verifico que el customer exista
+		if (customerRepository.findById(email).isPresent() == false) {
+			throw new Exception("El customer no existe");
+		}
+
+		// TODO Auto-generated method stub
+		return shopingCartRepository.findShopingCartDisable(email);
+	}
 
 }
