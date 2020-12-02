@@ -166,6 +166,7 @@ public class ShopingCartServiceImpl implements ShopingCartService {
 	}
 
 	@Override
+	@Transactional(readOnly = true)
 	public List<ShoppingCart> ListShopingCartEnable(String email) throws Exception {
 
 		// verifico que el customer exista
@@ -177,6 +178,7 @@ public class ShopingCartServiceImpl implements ShopingCartService {
 	}
 
 	@Override
+	@Transactional(readOnly = true)
 	public List<ShoppingCart> ListShopingCartDisable(String email) throws Exception {
 
 		// verifico que el customer exista

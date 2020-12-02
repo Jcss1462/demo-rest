@@ -55,9 +55,9 @@ public class CartServiceImpl implements CartService {
 		if (customer.getEnable() == null || customer.getEnable().equals("N") == true) {
 			throw new Exception("El cliente con email: " + email + " no esta habilitado");
 		}
-		
-		//verifico si existe un shoping cart activo
-		if(shopingCartService.ListShopingCartEnable(email).size()>0) {
+
+		// verifico si existe un shoping cart activo
+		if (shopingCartService.ListShopingCartEnable(email).size() > 0) {
 			throw new Exception("El cliente con email: " + email + " ya tiene un shopingCart activo");
 		}
 
@@ -237,16 +237,15 @@ public class CartServiceImpl implements CartService {
 			throw new Exception("Este carro ya esta pagado, no se puede limpiar");
 		}
 
-		
 		// reviso si el shoping cart tiene elementos
 		List<ShoppingProduct> shopingProducts = shopingProductService.findByCartId(carId);
-		
-		//si el carro no contiene shoping products
+
+		// si el carro no contiene shoping products
 		if (shopingProducts.isEmpty()) {
 			throw new Exception("El shoping cart ya esta vacio");
 		}
-		
-		//si tiene elementos recorro la lista de shopng products para eliminarlos
+
+		// si tiene elementos recorro la lista de shopng products para eliminarlos
 		for (ShoppingProduct item : shopingProducts) {
 			shopingProductService.deleteById(item.getShprId());
 		}
@@ -281,6 +280,42 @@ public class CartServiceImpl implements CartService {
 
 		return listaShopingProducts;
 
+	}
+
+	@Override
+	public ShoppingCart currentCart(String email) throws Exception {
+		// valido que el email venga valido
+		if (email == null || email.isBlank() == true) {
+			throw new Exception("El email del cilente es nulo");
+		}
+
+		// valido que el cliente exista
+		Optional<Customer> customerOptional = customerService.findById(email);
+		if (customerOptional.isPresent() == false) {
+			throw new Exception("No existe el cliente con email: " + email);
+		}
+		
+		if(shopingCartService.ListShopingCartEnable(email).isEmpty()) {
+			throw new Exception("Actualmente no hay carros activos");
+		}
+
+		// obtengo el carro actual
+		return shopingCartService.ListShopingCartEnable(email).get(0);
+	}
+
+	@Override
+	public List<ShoppingCart> historyCarts(String email) throws Exception {
+		// valido que el email venga valido
+		if (email == null || email.isBlank() == true) {
+			throw new Exception("El email del cilente es nulo");
+		}
+
+		// valido que el cliente exista
+		Optional<Customer> customerOptional = customerService.findById(email);
+		if (customerOptional.isPresent() == false) {
+			throw new Exception("No existe el cliente con email: " + email);
+		}
+		return shopingCartService.ListShopingCartDisable(email);
 	}
 
 }

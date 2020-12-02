@@ -1,6 +1,7 @@
 package co.edu.usbcali.demo.service;
 
 import java.util.List;
+import java.util.Optional;
 
 import co.edu.usbcali.demo.domain.Product;
 import co.edu.usbcali.demo.domain.ShoppingCart;
@@ -17,6 +18,11 @@ public interface CartService {
 	public void clearCart(Integer carId) throws Exception;
 	
 	public List<ShoppingProduct> findShoppingProductByShoppingCart(Integer carId)throws Exception;
+
+	
+	public ShoppingCart currentCart(String email)throws Exception;
+	
+	public List<ShoppingCart> historyCarts(String email)throws Exception;
 
 	
 }
