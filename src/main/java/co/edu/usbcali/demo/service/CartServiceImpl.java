@@ -181,6 +181,11 @@ public class CartServiceImpl implements CartService {
 		// obtengo el shoping cart
 		ShoppingCart shopingCart = shopingCartService.findById(carId).get();
 
+		// valido que el carro este activo
+		if (shopingCart.getEnable().equals("N") == true) {
+			throw new Exception("El shoping cart esta pagado, no se puede eliminar el producto");
+		}
+
 		// valido que el producto exista
 		if (productService.findById(proId).isPresent() == false) {
 			throw new Exception("El product no existe");
@@ -294,8 +299,8 @@ public class CartServiceImpl implements CartService {
 		if (customerOptional.isPresent() == false) {
 			throw new Exception("No existe el cliente con email: " + email);
 		}
-		
-		if(shopingCartService.ListShopingCartEnable(email).isEmpty()) {
+
+		if (shopingCartService.ListShopingCartEnable(email).isEmpty()) {
 			throw new Exception("Actualmente no hay carros activos");
 		}
 
@@ -316,6 +321,16 @@ public class CartServiceImpl implements CartService {
 			throw new Exception("No existe el cliente con email: " + email);
 		}
 		return shopingCartService.ListShopingCartDisable(email);
+	}
+
+	@Override
+	public ShoppingCart findCartById(Integer cartId) throws Exception {
+
+		if (cartId == null) {
+			throw new Exception("El cartId es nulo");
+		}
+
+		return shopingCartService.findById(cartId).get();
 	}
 
 }

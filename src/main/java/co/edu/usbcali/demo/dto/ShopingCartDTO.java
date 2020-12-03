@@ -21,18 +21,23 @@ public class ShopingCartDTO {
 	@NotEmpty // valido que no este vacio
 	private String enable;
 	
+	// bean validation
+	@NotNull
+	@PositiveOrZero
+	private Integer items;
+	
 	public ShopingCartDTO() {
 		super();
 	}
 
 	public ShopingCartDTO(Integer carId, @NotNull @PositiveOrZero Long total,
-			@NotNull @Size(min = 1, max = 1) @NotEmpty String enable) {
+			@NotNull @Size(min = 1, max = 1) @NotEmpty String enable, @NotNull @PositiveOrZero Integer items) {
 		super();
 		this.carId = carId;
 		this.total = total;
 		this.enable = enable;
+		this.items = items;
 	}
-
 
 	public Integer getCarId() {
 		return carId;
@@ -57,6 +62,15 @@ public class ShopingCartDTO {
 	public void setEnable(String enable) {
 		this.enable = enable;
 	}
+
+	public Integer getItems() {
+		return items;
+	}
+
+	public void setItems(Integer items) {
+		this.items = items;
+	}
+
 	
 	
 

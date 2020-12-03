@@ -18,11 +18,12 @@ public interface CartService {
 	public void clearCart(Integer carId) throws Exception;
 	
 	public List<ShoppingProduct> findShoppingProductByShoppingCart(Integer carId)throws Exception;
-
 	
 	public ShoppingCart currentCart(String email)throws Exception;
 	
 	public List<ShoppingCart> historyCarts(String email)throws Exception;
+	
+	public ShoppingCart findCartById(Integer cartId)throws Exception;
 
 	
 }
