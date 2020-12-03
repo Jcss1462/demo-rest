@@ -122,4 +122,17 @@ public class PaymentMethodController {
 
 	}
 
+	// Get http
+	@GetMapping("/findByEnable")
+	// guardo lo mandado por el url en el parametro email
+	// ? = puede retornar cualqier cosa
+	public ResponseEntity<?> findByEnable() throws Exception {
+		log.info("findAll");
+		// lista de paymentMethods
+		List<PaymentMethod> paymentMethods = paymentMethodService.findByEnable();
+		// uso el mapper par convertir la lista de products a los dtos
+		List<PaymentMethodDTO> paymentMethodDTOs = paymentMethodMapper.toPaymentMethodsDTO(paymentMethods);
+		return ResponseEntity.ok().body(paymentMethodDTOs);
+	}
+
 }
