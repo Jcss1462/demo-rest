@@ -3,8 +3,6 @@ package co.edu.usbcali.demo.service;
 import java.util.List;
 import java.util.Optional;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
@@ -12,6 +10,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import co.edu.usbcali.demo.domain.Customer;
+import co.edu.usbcali.demo.domain.PaymentMethod;
 import co.edu.usbcali.demo.domain.Product;
 import co.edu.usbcali.demo.domain.ShoppingCart;
 import co.edu.usbcali.demo.domain.ShoppingProduct;
@@ -20,7 +19,7 @@ import co.edu.usbcali.demo.domain.ShoppingProduct;
 @Scope("singleton")
 public class CartServiceImpl implements CartService {
 
-	private final static Logger log = LoggerFactory.getLogger(CartServiceImpl.class);
+	//private final static Logger log = LoggerFactory.getLogger(CartServiceImpl.class);
 
 	// inyecto los servicios que necesitar
 	@Autowired
@@ -31,6 +30,8 @@ public class CartServiceImpl implements CartService {
 	PrdouctService productService;
 	@Autowired
 	ShopingProductService shopingProductService;
+	@Autowired
+	PaymentMethodService paymentMthod;
 
 	@Override
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
@@ -62,7 +63,7 @@ public class CartServiceImpl implements CartService {
 		}
 
 		// creo un nuevo shopingCart para el cliente y lo guardo
-		ShoppingCart shoppingCart = new ShoppingCart(0, customer, null, 0, 0L, "Y", null);
+		ShoppingCart shoppingCart = new ShoppingCart(0, customer, null, 0, 0L, "Y", null, null);
 		shoppingCart = shopingCartService.save(shoppingCart);
 
 		return shoppingCart;
@@ -279,12 +280,8 @@ public class CartServiceImpl implements CartService {
 		ShoppingCart shopingCart = shopingCartService.findById(carId).get();
 		List<ShoppingProduct> listaShopingProducts = shopingCart.getShoppingProducts();
 
-		for (ShoppingProduct shoppingProduct : listaShopingProducts) {
-
-		}
-
+		
 		return listaShopingProducts;
-
 	}
 
 	@Override
@@ -331,6 +328,63 @@ public class CartServiceImpl implements CartService {
 		}
 
 		return shopingCartService.findById(cartId).get();
+	}
+
+	@Override
+	public ShoppingCart payCart(Integer cartId, Integer payId, Long cartNumber) throws Exception {
+		// valido que los valores de ebtrada
+		if (payId == null) {
+			throw new Exception("El payId es nulo");
+		}
+		
+		if (cartNumber == null) {
+			throw new Exception("El cartNumber es nulo");
+		}
+		
+		if (cartId == null) {
+			throw new Exception("El cartId es nulo");
+		}
+		
+		//reviso que exitsa el peymentMthod y qu eeste habilitdo
+		if(paymentMthod.findById(payId).isPresent()==false) {
+			throw new Exception("El paymentMethod no existe");
+		}
+		
+		PaymentMethod paymentMethod=paymentMthod.findById(payId).get();
+		
+		if(paymentMethod.getEnable().equals("N")) {
+			throw new Exception("El paymentMethod no esta disponible");
+		}
+		
+		//reviso que el shoping cart exusta y sea valido
+		
+		if(shopingCartService.findById(cartId).isPresent()==false) {
+			throw new Exception("El shopingCart no existe");
+		}
+		
+		ShoppingCart shopingCart=shopingCartService.findById(cartId).get();
+		
+		if(shopingCart.getEnable().equals("N")) {
+			throw new Exception("El shopingCart ya esta pago");
+		}
+		
+		//reviso que el shopingCart tenga productos
+		if(shopingCart.getShoppingProducts().isEmpty()) {
+			throw new Exception("El shopingCart esta vacio");
+		}
+		
+		
+		//si todo sale bien
+		//actualizo el shoping cart
+		shopingCart.setCartNumber(cartNumber);
+		shopingCart.setPaymentMethod(paymentMethod);
+		shopingCart.setEnable("N");
+		shopingCartService.update(shopingCart);
+		
+		//creo un nuevo carro
+		createCart(shopingCart.getCustomer().getEmail());
+		
+		return shopingCart;
 	}
 
 }
