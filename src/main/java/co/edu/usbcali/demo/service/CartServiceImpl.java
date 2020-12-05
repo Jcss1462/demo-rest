@@ -239,7 +239,7 @@ public class CartServiceImpl implements CartService {
 		ShoppingCart shopingCart = shopingCartService.findById(carId).get();
 
 		// si el shoping cart tiene pymentmethod no dejo eliminarlo
-		if (shopingCart.getPaymentMethod() != null) {
+		if (shopingCart.getPaymentMethod() != null||shopingCart.getEnable().equals('N')) {
 			throw new Exception("Este carro ya esta pagado, no se puede limpiar");
 		}
 

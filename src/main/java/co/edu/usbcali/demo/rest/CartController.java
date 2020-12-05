@@ -140,6 +140,14 @@ public class CartController {
 		return ResponseEntity.ok().body(cartDto);
 
 	}
-
+	
+	@DeleteMapping("/clearCart/{carId}")
+	// guardo lo mandado por el url en el parametro email
+	// ? = puede retornar cualqier cosa
+	public ResponseEntity<?> clearCart(@PathVariable("carId") Integer carId) throws Exception {
+		// borro
+		cartService.clearCart(carId);
+		return ResponseEntity.ok().build();
+	}
 
 }
