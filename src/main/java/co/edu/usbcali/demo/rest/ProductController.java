@@ -137,4 +137,46 @@ public class ProductController {
 
 	}
 
+	// Get http
+	@GetMapping("/findByName/{name}")
+	// guardo lo mandado por el url en el parametro email
+	// ? = puede retornar cualqier cosa
+	public ResponseEntity<?> findByName(@PathVariable("name") String name) throws Exception {
+
+		// lista de products
+		List<Product> products = productService.findByName(name);
+		// uso el mapper par convertir la lista de products a los dtos
+		List<ProductDTO> productDTOs = productMapper.toProductsDto(products);
+		return ResponseEntity.ok().body(productDTOs);
+
+	}
+
+	// Get http
+	@GetMapping("/findByDetail/{detail}")
+	// guardo lo mandado por el url en el parametro email
+	// ? = puede retornar cualqier cosa
+	public ResponseEntity<?> findByDetail(@PathVariable("detail") String detail) throws Exception {
+
+		// lista de products
+		List<Product> products = productService.findByDetail(detail);
+		// uso el mapper par convertir la lista de products a los dtos
+		List<ProductDTO> productDTOs = productMapper.toProductsDto(products);
+		return ResponseEntity.ok().body(productDTOs);
+
+	}
+
+	// Get http
+	@GetMapping("/findByPrice/{priceFrom}/{priceTo}")
+	// guardo lo mandado por el url en el parametro email
+	// ? = puede retornar cualqier cosa
+	public ResponseEntity<?> findByPrice(@PathVariable("priceFrom") Integer priceFrom, @PathVariable("priceTo") Integer priceTo) throws Exception {
+
+		// lista de products
+		List<Product> products = productService.findByPrice(priceFrom, priceTo);
+		// uso el mapper par convertir la lista de products a los dtos
+		List<ProductDTO> productDTOs = productMapper.toProductsDto(products);
+		return ResponseEntity.ok().body(productDTOs);
+
+	}
+
 }

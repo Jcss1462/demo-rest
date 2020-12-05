@@ -146,7 +146,7 @@ class ProductRepositoryTest {
 	@Order(7)
 	void filterPrice() {
 		log.info("filterPrice");
-		List<Product> products = productRepository.filterPrice(4440001,6440001);
+		List<Product> products = productRepository.filterPrice(100,1000000000);
 		
 		//siga si encontro registro(no esta vacio)
 		assertFalse(products.isEmpty(),"Prductos no encontrados");

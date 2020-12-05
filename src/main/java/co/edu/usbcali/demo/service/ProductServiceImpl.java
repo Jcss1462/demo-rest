@@ -149,4 +149,22 @@ public class ProductServiceImpl implements PrdouctService {
 		return productRepository.finByEnbleY();
 	}
 
+	@Override
+	public List<Product> findByName(String name) {
+		// TODO Auto-generated method stub
+		return productRepository.filterName(name);
+	}
+
+	@Override
+	public List<Product> findByDetail(String detail) {
+		// TODO Auto-generated method stub
+		return productRepository.filterDetail(detail);
+	}
+
+	@Override
+	public List<Product> findByPrice(Integer priceFrom, Integer priceTo) {
+		// TODO Auto-generated method stub
+		return productRepository.filterPrice(priceFrom,priceTo);
+	}
+
 }
