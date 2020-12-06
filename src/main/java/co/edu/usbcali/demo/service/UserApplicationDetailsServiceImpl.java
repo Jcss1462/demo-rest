@@ -51,6 +51,10 @@ public class UserApplicationDetailsServiceImpl implements UserDetailsService {
 			throw new UsernameNotFoundException(username);
 		}
 		
+		if(customer.get().getEnable().equals("N")) {
+			throw new UsernameNotFoundException("El customer esta inabilitado");
+		}
+		
 		BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
 		UserApplication userApplication = new UserApplication(customer.get().getEmail(), bCryptPasswordEncoder.encode(customer.get().getToken()));
 
